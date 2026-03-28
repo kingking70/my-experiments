@@ -169,7 +169,9 @@ const ParticleTextEffect: React.FC<ParticleTextEffectProps> = ({
     if (!canvas || !ctx) return;
 
     textBox.str = text;
-    textBox.h = Math.floor(canvas.width / textBox.str.length);
+    const byWidth = Math.floor(canvas.width / textBox.str.length);
+    const minHeight = Math.floor(Math.min(canvas.width, canvas.height) * 0.08);
+    textBox.h = Math.max(byWidth, minHeight);
 
     interactionRadiusRef.current = Math.max(50, textBox.h * 1.5);
 

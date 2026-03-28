@@ -7,7 +7,7 @@ const thissite: Note = {
   subtitle: 'kingstonkoh.com',
   body: '',
   sections: [{ heading: 'info', body: 'my public inbox of experiments' },
-    { heading: 'next', body: 'port https://kkohs.com/\'s content to this site', checklist: true },
+    { heading: 'next', body: 'port https://kkohs.com/\'s content to this site; maybe replace "kingston\'s experiments" section?', checklist: true },
     ],
   pinned: true,
 };

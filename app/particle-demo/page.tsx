@@ -6,7 +6,7 @@ export default function ParticleDemoPage() {
   return (
     <main className="bg-background text-foreground">
       {/* Particle text section */}
-      <section className="relative h-[70vh] overflow-hidden">
+      <section className="relative h-[90vh] overflow-hidden">
         <DemoOne />
       </section>
 

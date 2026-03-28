@@ -1,9 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, PenLine, PanelLeft, Folder, FolderOpen, Pin } from 'lucide-react';
+import { Search, PenLine, PanelLeft, Folder, FolderOpen, Pin, ChevronLeft } from 'lucide-react';
 import { folders, allNotes } from './notes';
 import type { Note } from './notes/types';
+
+type MobileView = 'folders' | 'notes' | 'note';
 
 function FolderIcon({ selected }: { selected: boolean }) {
   const cls = `h-4 w-4 shrink-0 ${selected ? 'text-amber-500' : 'text-amber-400'}`;
@@ -38,6 +40,7 @@ export function NotesApp() {
   const [selectedFolder, setSelectedFolder] = useState('notes');
   const [selectedNote, setSelectedNote] = useState<Note | null>(allNotes[0] ?? null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileView, setMobileView] = useState<MobileView>('folders');
 
   const folderNotes = allNotes.filter((n) => n.folder === selectedFolder);
   const pinned = folderNotes.filter((n) => n.pinned);
@@ -47,47 +50,67 @@ export function NotesApp() {
   return (
     <div className="flex h-[780px] overflow-hidden rounded-xl border border-border/60 shadow-2xl shadow-black/20">
       {/* Sidebar */}
-      {sidebarOpen && (
-        <div className="flex w-52 shrink-0 flex-col border-r border-border/60 bg-[#f0efe9] dark:bg-[#2c2c2e]">
-          <div className="flex h-11 items-center gap-2 px-3">
-            <div className="flex gap-1.5">
-              <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
-              <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
-              <span className="h-3 w-3 rounded-full bg-[#28c840]" />
-            </div>
+      <div
+        className={`
+          flex-col border-r border-border/60 bg-[#f0efe9] dark:bg-[#2c2c2e]
+          ${mobileView === 'folders' ? 'flex' : 'hidden'} md:flex
+          w-full md:w-52 md:shrink-0
+          ${!sidebarOpen ? 'md:hidden' : ''}
+        `}
+      >
+        <div className="flex h-11 items-center gap-2 px-3">
+          <div className="flex gap-1.5">
+            <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+            <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
+            <span className="h-3 w-3 rounded-full bg-[#28c840]" />
           </div>
-
-          <nav className="flex-1 overflow-y-auto px-1.5 pb-3">
-            {folders.map((folder) => (
-              <button
-                key={folder.id}
-                onClick={() => {
-                  setSelectedFolder(folder.id);
-                  setSelectedNote(null);
-                }}
-                className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-sm transition-colors ${
-                  selectedFolder === folder.id
-                    ? 'bg-amber-400/30 font-medium text-foreground dark:bg-amber-400/20'
-                    : 'text-foreground/80 hover:bg-black/5 dark:hover:bg-white/5'
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <FolderIcon selected={selectedFolder === folder.id} />
-                  {folder.name}
-                </span>
-                <span className="text-xs text-muted-foreground">{folderCount(folder.id)}</span>
-              </button>
-            ))}
-          </nav>
         </div>
-      )}
+
+        <nav className="flex-1 overflow-y-auto px-1.5 pb-3">
+          {folders.map((folder) => (
+            <button
+              key={folder.id}
+              onClick={() => {
+                setSelectedFolder(folder.id);
+                setSelectedNote(null);
+                setMobileView('notes');
+              }}
+              className={`flex w-full items-center justify-between rounded-lg px-2 py-1.5 text-left text-sm transition-colors ${
+                selectedFolder === folder.id
+                  ? 'bg-amber-400/30 font-medium text-foreground dark:bg-amber-400/20'
+                  : 'text-foreground/80 hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <FolderIcon selected={selectedFolder === folder.id} />
+                {folder.name}
+              </span>
+              <span className="text-xs text-muted-foreground">{folderCount(folder.id)}</span>
+            </button>
+          ))}
+        </nav>
+      </div>
 
       {/* Notes list */}
-      <div className="flex w-64 shrink-0 flex-col border-r border-border/60 bg-[#f7f6f1] dark:bg-[#242426]">
+      <div
+        className={`
+          flex-col border-r border-border/60 bg-[#f7f6f1] dark:bg-[#242426]
+          ${mobileView === 'notes' ? 'flex' : 'hidden'} md:flex
+          w-full md:w-64 md:shrink-0
+        `}
+      >
         <div className="flex h-11 items-center justify-between border-b border-border/40 px-3">
+          {/* Mobile: back to folders */}
+          <button
+            onClick={() => setMobileView('folders')}
+            className="rounded p-1 text-muted-foreground transition-colors hover:bg-black/10 dark:hover:bg-white/10 md:hidden"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          {/* Desktop: toggle sidebar */}
           <button
             onClick={() => setSidebarOpen((v) => !v)}
-            className="rounded p-1 text-muted-foreground transition-colors hover:bg-black/10 dark:hover:bg-white/10"
+            className="hidden rounded p-1 text-muted-foreground transition-colors hover:bg-black/10 dark:hover:bg-white/10 md:block"
           >
             <PanelLeft className="h-4 w-4" />
           </button>
@@ -119,7 +142,10 @@ export function NotesApp() {
                       key={note.id}
                       note={note}
                       selected={selectedNote?.id === note.id}
-                      onSelect={() => setSelectedNote(note)}
+                      onSelect={() => {
+                        setSelectedNote(note);
+                        setMobileView('note');
+                      }}
                     />
                   ))}
                 </div>
@@ -136,7 +162,10 @@ export function NotesApp() {
                       key={note.id}
                       note={note}
                       selected={selectedNote?.id === note.id}
-                      onSelect={() => setSelectedNote(note)}
+                      onSelect={() => {
+                        setSelectedNote(note);
+                        setMobileView('note');
+                      }}
                     />
                   ))}
                 </div>
@@ -147,8 +176,22 @@ export function NotesApp() {
       </div>
 
       {/* Note viewer */}
-      <div className="flex flex-1 flex-col bg-[#faf9f5] dark:bg-[#1c1c1e]">
-        <div className="flex h-11 items-center justify-end border-b border-border/40 px-4">
+      <div
+        className={`
+          flex-col bg-[#faf9f5] dark:bg-[#1c1c1e]
+          ${mobileView === 'note' ? 'flex' : 'hidden'} md:flex
+          flex-1
+        `}
+      >
+        <div className="flex h-11 items-center justify-between border-b border-border/40 px-4">
+          {/* Mobile: back to notes list */}
+          <button
+            onClick={() => setMobileView('notes')}
+            className="rounded p-1 text-muted-foreground transition-colors hover:bg-black/10 dark:hover:bg-white/10 md:hidden"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <div className="hidden md:block" />
           <div className="flex items-center gap-1 rounded-lg bg-black/5 px-2.5 py-1 dark:bg-white/5">
             <Search className="h-3 w-3 text-muted-foreground" />
             <span className="text-xs text-muted-foreground">Search</span>
