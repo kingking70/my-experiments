@@ -18,6 +18,7 @@ interface Particle {
   ov: number;
   f: number;
   rgb: number[];
+  draw(): void;
 }
 
 interface TextBox {
