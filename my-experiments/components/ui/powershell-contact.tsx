@@ -92,7 +92,7 @@ export function PowershellContact() {
         onClick={() => (step === 'message' ? textareaRef : inputRef).current?.focus()}
       >
         {/* Header */}
-        <p>kingston.kdk@gmail.com</p>
+        <p>SAY HELLO</p>
         <br />
         <p className="mb-4 text-[#10e858]">
           © kingstonkoh.com all rights reserved.
@@ -167,7 +167,7 @@ export function PowershellContact() {
                   autoFocus
                   rows={1}
                   spellCheck={false}
-                  className="flex-1 resize-none overflow-hidden bg-transparent text-[#eeedf0] outline-none caret-[#eeedf0] placeholder:text-[#eeedf0]/40"
+                  className="flex-1 resize-none overflow-hidden bg-transparent text-[#eeedf0] outline-none caret-[#eeedf0] placeholder:text-[#fbfbfb]/40"
                   placeholder="your message... (shift+enter for new line)"
                   style={{ fontFamily: 'inherit', fontSize: 'inherit', lineHeight: 'inherit' }}
                 />

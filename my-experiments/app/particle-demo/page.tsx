@@ -6,12 +6,12 @@ export default function ParticleDemoPage() {
   return (
     <main className="bg-background text-foreground">
       {/* Particle text section */}
-      <section className="relative h-svh overflow-hidden">
+      <section className="relative h-[70vh] overflow-hidden">
         <DemoOne />
       </section>
 
       {/* Notes section */}
-      <section className="px-6 pb-20 pt-2 md:px-16">
+      <section className="px-6 pb-20 pt-4 md:px-16">
         <div className="mx-auto max-w-5xl">
           <NotesApp />
         </div>

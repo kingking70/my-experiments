@@ -186,6 +186,56 @@ export function NotesApp() {
                 )}
               </div>
             )}
+            {selectedNote.sections && selectedNote.sections.length > 0 && (
+              <div className="mt-6 flex flex-col gap-5">
+                {selectedNote.sections.map((section, i) => (
+                  <div key={i}>
+                    <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-foreground/70">
+                      {section.heading}
+                    </h3>
+                    {section.body && (
+                      <div className="text-sm leading-relaxed">
+                        {section.checklist ? (
+                          <ul className="flex flex-col gap-1.5">
+                            {section.body.split('\n').filter(Boolean).map((item, j) => (
+                              <li key={j} className="flex items-start gap-2">
+                                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-foreground/30" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : section.numbered ? (
+                          <ol className="flex flex-col gap-1.5">
+                            {section.body.split('\n').filter(Boolean).map((item, j) => (
+                              <li key={j} className="flex items-start gap-2">
+                                <span className="shrink-0 tabular-nums text-muted-foreground">{j + 1}.</span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ol>
+                        ) : section.body.startsWith('http') ? (
+                          <a
+                            href={section.body}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-500 underline underline-offset-2 hover:text-blue-400"
+                          >
+                            {section.body}
+                          </a>
+                        ) : (
+                          <p className="whitespace-pre-line">{section.body}</p>
+                        )}
+                      </div>
+                    )}
+                    <br/>
+                    {section.image && (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={section.image} alt="" className="w-full rounded-xl" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
             {selectedNote.images && selectedNote.images.length > 0 && (
               <div className="mt-6 flex flex-col gap-4">
                 {selectedNote.images.map((src, i) => (
