@@ -164,7 +164,6 @@ export function PowershellContact() {
                       handleEnter();
                     }
                   }}
-                  autoFocus
                   rows={1}
                   spellCheck={false}
                   className="flex-1 resize-none overflow-hidden bg-transparent text-[#eeedf0] outline-none caret-[#eeedf0] placeholder:text-[#fbfbfb]/40"
@@ -178,7 +177,6 @@ export function PowershellContact() {
                   value={current}
                   onChange={(e) => setCurrent(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleEnter(); }}
-                  autoFocus
                   spellCheck={false}
                   className="flex-1 bg-transparent text-[#eeedf0] outline-none caret-[#eeedf0] placeholder:text-[#eeedf0]/40"
                   placeholder="your@email.com"
