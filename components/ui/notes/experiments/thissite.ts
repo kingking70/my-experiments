@@ -2,7 +2,7 @@ import { Note } from '../types';
 
 const thissite: Note = {
   id: 'thissite',
-  folder: 'projects',
+  folder: 'experiments',
   title: 'this site',
   subtitle: 'kingstonkoh.com',
   body: '',
