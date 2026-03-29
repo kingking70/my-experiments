@@ -9,14 +9,16 @@ import { Venus } from './venus';
 function LoadingVideo() {
   return (
     <div className="h-[70vh] w-full flex items-center justify-center">
-      <video
-        src="/loading-thinking.mp4"
-        autoPlay
-        loop
-        muted
-        playsInline
-        className="h-full w-full object-cover"
-      />
+      <div className="w-80 h-80 rounded-full overflow-hidden">
+        <video
+          src="/loading-thinking.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover object-top"
+        />
+      </div>
     </div>
   );
 }
