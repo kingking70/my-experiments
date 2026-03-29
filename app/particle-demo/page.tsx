@@ -1,4 +1,4 @@
-import { DemoOne } from "@/components/demo";
+import { TypewriterCanvas } from "@/components/typewriterscene";
 import { NotesApp } from "@/components/ui/notes-app";
 import { PowershellContact } from "@/components/ui/powershell-contact";
 
@@ -7,7 +7,7 @@ export default function ParticleDemoPage() {
     <main className="bg-background text-foreground">
       {/* Particle text section */}
       <section className="relative h-[90vh] overflow-hidden">
-        <DemoOne />
+        <TypewriterCanvas />
       </section>
 
       {/* Notes section */}

@@ -12,14 +12,34 @@ function FolderIcon({ selected }: { selected: boolean }) {
   return selected ? <FolderOpen className={cls} /> : <Folder className={cls} />;
 }
 
+function Highlight({ text, query }: { text: string; query: string }) {
+  if (!query) return <>{text}</>;
+  const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
+  return (
+    <>
+      {parts.map((part, i) =>
+        part.toLowerCase() === query.toLowerCase() ? (
+          <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/50 rounded-sm px-px text-foreground">
+            {part}
+          </mark>
+        ) : (
+          part
+        )
+      )}
+    </>
+  );
+}
+
 function NoteRow({
   note,
   selected,
   onSelect,
+  query,
 }: {
   note: Note;
   selected: boolean;
   onSelect: () => void;
+  query: string;
 }) {
   return (
     <button
@@ -30,8 +50,12 @@ function NoteRow({
           : 'hover:bg-black/5 dark:hover:bg-white/5'
       }`}
     >
-      <p className="truncate text-sm font-medium">{note.title}</p>
-      <p className="truncate text-xs text-muted-foreground">{note.subtitle}</p>
+      <p className="truncate text-sm font-medium">
+        <Highlight text={note.title} query={query} />
+      </p>
+      <p className="truncate text-xs text-muted-foreground">
+        <Highlight text={note.subtitle} query={query} />
+      </p>
     </button>
   );
 }
@@ -41,10 +65,26 @@ export function NotesApp() {
   const [selectedNote, setSelectedNote] = useState<Note | null>(allNotes[0] ?? null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileView, setMobileView] = useState<MobileView>('folders');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  const folderNotes = allNotes.filter((n) => n.folder === selectedFolder);
-  const pinned = folderNotes.filter((n) => n.pinned);
-  const unpinned = folderNotes.filter((n) => !n.pinned);
+  const q = searchQuery.toLowerCase();
+  const isSearching = q.length > 0;
+
+  const matchesSearch = (n: Note) =>
+    n.title.toLowerCase().includes(q) ||
+    n.subtitle.toLowerCase().includes(q) ||
+    n.body.toLowerCase().includes(q) ||
+    (n.sections ?? []).some(
+      (s) =>
+        s.heading.toLowerCase().includes(q) ||
+        (s.body ?? '').toLowerCase().includes(q)
+    );
+
+  const folderNotes = isSearching
+    ? allNotes.filter(matchesSearch)
+    : allNotes.filter((n) => n.folder === selectedFolder);
+  const pinned = isSearching ? [] : folderNotes.filter((n) => n.pinned);
+  const unpinned = isSearching ? folderNotes : folderNotes.filter((n) => !n.pinned);
   const folderCount = (id: string) => allNotes.filter((n) => n.folder === id).length;
 
   return (
@@ -115,7 +155,7 @@ export function NotesApp() {
             <PanelLeft className="h-4 w-4" />
           </button>
           <span className="text-sm font-semibold">
-            {folders.find((f) => f.id === selectedFolder)?.name}
+            {isSearching ? 'Search Results' : folders.find((f) => f.id === selectedFolder)?.name}
           </span>
           <button className="rounded p-1 text-muted-foreground/40" disabled>
             <PenLine className="h-4 w-4" />
@@ -125,9 +165,11 @@ export function NotesApp() {
         <div className="flex-1 overflow-y-auto">
           {folderNotes.length === 0 ? (
             <div className="flex h-full flex-col items-center justify-center gap-2 text-center">
-              <p className="text-sm font-medium text-muted-foreground">No Notes</p>
+              <p className="text-sm font-medium text-muted-foreground">
+                {isSearching ? 'No Results' : 'No Notes'}
+              </p>
               <p className="max-w-[160px] text-xs text-muted-foreground/60">
-                Notes you create will appear here
+                {isSearching ? 'Try a different search term' : 'Notes you create will appear here'}
               </p>
             </div>
           ) : (
@@ -142,6 +184,7 @@ export function NotesApp() {
                       key={note.id}
                       note={note}
                       selected={selectedNote?.id === note.id}
+                      query={searchQuery}
                       onSelect={() => {
                         setSelectedNote(note);
                         setMobileView('note');
@@ -162,6 +205,7 @@ export function NotesApp() {
                       key={note.id}
                       note={note}
                       selected={selectedNote?.id === note.id}
+                      query={searchQuery}
                       onSelect={() => {
                         setSelectedNote(note);
                         setMobileView('note');
@@ -193,8 +237,17 @@ export function NotesApp() {
           </button>
           <div className="hidden md:block" />
           <div className="flex items-center gap-1 rounded-lg bg-black/5 px-2.5 py-1 dark:bg-white/5">
-            <Search className="h-3 w-3 text-muted-foreground" />
-            <span className="text-xs text-muted-foreground">Search</span>
+            <Search className="h-3 w-3 shrink-0 text-muted-foreground" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setMobileView('notes');
+              }}
+              placeholder="Search"
+              className="w-24 bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none"
+            />
           </div>
         </div>
 
@@ -202,8 +255,12 @@ export function NotesApp() {
           <div className="flex-1 overflow-y-auto px-8 py-6">
             <div className="flex items-start justify-between">
               <div>
-                <h1 className="text-2xl font-bold">{selectedNote.title}</h1>
-                <p className="mt-0.5 text-sm text-muted-foreground">{selectedNote.subtitle}</p>
+                <h1 className="text-2xl font-bold">
+                  <Highlight text={selectedNote.title} query={searchQuery} />
+                </h1>
+                <p className="mt-0.5 text-sm text-muted-foreground">
+                  <Highlight text={selectedNote.subtitle} query={searchQuery} />
+                </p>
               </div>
               {selectedNote.pinned && (
                 <Pin className="mt-1 h-4 w-4 shrink-0 fill-amber-400 text-amber-400" />
@@ -221,7 +278,9 @@ export function NotesApp() {
                     {selectedNote.body}
                   </a>
                 ) : (
-                  <p className="whitespace-pre-line">{selectedNote.body}</p>
+                  <p className="whitespace-pre-line">
+                    <Highlight text={selectedNote.body} query={searchQuery} />
+                  </p>
                 )}
                 {selectedNote.image && (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -234,25 +293,33 @@ export function NotesApp() {
                 {selectedNote.sections.map((section, i) => (
                   <div key={i}>
                     <h3 className="mb-2 text-xs font-semibold uppercase tracking-widest text-foreground/70">
-                      {section.heading}
+                      <Highlight text={section.heading} query={searchQuery} />
                     </h3>
                     {section.body && (
                       <div className="text-sm leading-relaxed">
                         {section.checklist ? (
                           <ul className="flex flex-col gap-1.5">
-                            {section.body.split('\n').filter(Boolean).map((item, j) => (
-                              <li key={j} className="flex items-start gap-2">
-                                <span className="mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border border-foreground/30" />
-                                <span>{item}</span>
-                              </li>
-                            ))}
+                            {section.body.split('\n').filter(Boolean).map((item, j) => {
+                              const checked = item.startsWith('[x] ');
+                              const label = checked ? item.slice(4) : item;
+                              return (
+                                <li key={j} className="flex items-start gap-2">
+                                  <span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border ${checked ? 'border-amber-400 bg-amber-400' : 'border-foreground/30'}`}>
+                                    {checked && <span className="text-[9px] font-bold text-white leading-none">✓</span>}
+                                  </span>
+                                  <span className={checked ? 'line-through text-muted-foreground' : ''}>
+                                    <Highlight text={label} query={searchQuery} />
+                                  </span>
+                                </li>
+                              );
+                            })}
                           </ul>
                         ) : section.numbered ? (
                           <ol className="flex flex-col gap-1.5">
                             {section.body.split('\n').filter(Boolean).map((item, j) => (
                               <li key={j} className="flex items-start gap-2">
                                 <span className="shrink-0 tabular-nums text-muted-foreground">{j + 1}.</span>
-                                <span>{item}</span>
+                                <span><Highlight text={item} query={searchQuery} /></span>
                               </li>
                             ))}
                           </ol>
@@ -266,7 +333,9 @@ export function NotesApp() {
                             {section.body}
                           </a>
                         ) : (
-                          <p className="whitespace-pre-line">{section.body}</p>
+                          <p className="whitespace-pre-line">
+                            <Highlight text={section.body} query={searchQuery} />
+                          </p>
                         )}
                       </div>
                     )}

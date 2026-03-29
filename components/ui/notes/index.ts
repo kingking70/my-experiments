@@ -5,8 +5,8 @@ import projects from './projects';
 
 export const folders: FolderItem[] = [
   { id: 'notes', name: 'Notes', icon: 'folder' },
-  { id: 'writings', name: 'writings', icon: 'folder' },
   { id: 'projects', name: 'projects', icon: 'folder' },
+  { id: 'writings', name: 'writings', icon: 'folder' },
 ];
 
 export const allNotes: Note[] = [

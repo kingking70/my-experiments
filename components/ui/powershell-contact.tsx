@@ -87,7 +87,7 @@ export function PowershellContact() {
 
       {/* Shell body */}
       <div
-        className="min-h-64 p-4 text-sm leading-relaxed text-[#eeedf0]"
+        className="min-h-80 p-4 text-sm leading-relaxed text-[#eeedf0]"
         style={{ backgroundColor: '#012456' }}
         onClick={() => (step === 'message' ? textareaRef : inputRef).current?.focus()}
       >
