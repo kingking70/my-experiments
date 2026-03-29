@@ -1,9 +1,25 @@
 'use client';
 
+import { Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import Typewriter from 'typewriter-effect';
 import { Venus } from './venus';
+
+function LoadingVideo() {
+  return (
+    <div className="h-[70vh] w-full flex items-center justify-center">
+      <video
+        src="/loading-thinking.mp4"
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="h-full w-full object-cover"
+      />
+    </div>
+  );
+}
 
 function Scene() {
   return (
@@ -30,13 +46,15 @@ function Scene() {
 export function TypewriterCanvas() {
   return (
     <div className="relative flex flex-col items-center">
-      <div className="h-[70vh] w-full">
-        <Canvas>
-          <ambientLight intensity={1.5} />
-          <directionalLight position={[5, 5, 5]} intensity={1} />
-          <Scene />
-        </Canvas>
-      </div>
+      <Suspense fallback={<LoadingVideo />}>
+        <div className="h-[70vh] w-full">
+          <Canvas>
+            <ambientLight intensity={1.5} />
+            <directionalLight position={[5, 5, 5]} intensity={1} />
+            <Scene />
+          </Canvas>
+        </div>
+      </Suspense>
     </div>
   );
 }
