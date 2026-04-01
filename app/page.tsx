@@ -30,6 +30,11 @@ export default function Page() {
         </div>
       </section>
 
+       {/* extra */}
+       <div className="px-6 pb-12 text-center text-m text-muted-foreground md:px-18">
+        <i>i sometimes take photos too</i>
+      </div>
+
       
 
       {/* Photo cube */}
