@@ -7,7 +7,7 @@ const thissite: Note = {
   subtitle: 'kingstonkoh.com',
   body: '',
   sections: [{ heading: 'info', body: 'my public inbox of experiments' },
-    { heading: 'next', body: '[x] port https://kkohs.com/\'s content to this site; maybe replace "kingston\'s experiments" section?\n[x] add ideas from actual notes app to \'what\' note, want to \ncreate vertical side docks and features to minimise/maximise apps accordingly - remember to update about note ', checklist: true },
+    { heading: 'next', body: '[x] port https://kkohs.com/\'s content to this site; maybe replace "kingston\'s experiments" section?\n[x] add ideas from actual notes app to \'what\' note, want to ', checklist: true },
     ],
   pinned: false,
 };
