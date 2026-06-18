@@ -344,6 +344,9 @@ export function NotesApp() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={section.image} alt="" className="w-full rounded-xl" />
                     )}
+                    {section.video && (
+                      <video src={section.video} className="w-1/2 rounded-xl" controls autoPlay muted loop playsInline />
+                    )}
                   </div>
                 ))}
               </div>

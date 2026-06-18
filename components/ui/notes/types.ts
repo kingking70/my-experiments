@@ -4,6 +4,7 @@ export interface Section {
   checklist?: boolean;
   numbered?: boolean;
   image?: string;
+  video?: string;
 }
 
 export interface Note {
