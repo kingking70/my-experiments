@@ -7,7 +7,7 @@ const climatehelp: Note = {
   subtitle: 'cli & climate help',
   body: '',
   sections: [
-    { heading: 'info', body: 'cli-mate.help is a wordplay between cli and climate. cli is an acronym for command line interface while climate is the weather and prevailing trend.\n\nthis website aims to educate people on tech and energy through interactive games and news. the current focus is nuclear electricity and creating your own private tech.' },
+    { heading: 'info', body: 'cli-mate.help is a wordplay with cli (aka tech) and climate. cli is an acronym for command line interface; mate refers to a friend; climate refers to the planet\'s health.\n\ncurrently, i\'m using this website to store and educate myself on private and malleabe tech, and bio(medical)engineered products through mostly writings and some mini interactive games.' },
     { heading: 'next', body: '', checklist: true },
     { heading: 'current', body: 'https://cli-mate.help/', image: '/climatehelp-current.png' },
   ],
