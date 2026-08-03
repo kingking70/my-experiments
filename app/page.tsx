@@ -13,7 +13,7 @@ export default function Page() {
 
       {/* Theme hint */}
       <div className="px-6 pb-12 text-center text-m text-muted-foreground md:px-18">
-        click d to toggle between light and night mode
+        tap/click thrice to toggle between light and night mode
       </div>
 
       {/* Notes section */}

@@ -44,8 +44,8 @@ function isInteractiveTarget(target: EventTarget | null) {
   )
 }
 
-const HOLD_DURATION_MS = 3000
-const HOLD_MOVE_TOLERANCE_PX = 10
+const REQUIRED_CLICKS = 3
+const CLICK_INTERVAL_MS = 500
 
 function ThemeToggleGestures() {
   const { resolvedTheme, setTheme } = useTheme()
@@ -55,95 +55,49 @@ function ThemeToggleGestures() {
   }, [resolvedTheme, setTheme])
 
   React.useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.defaultPrevented || event.repeat) {
-        return
-      }
-
-      if (event.metaKey || event.ctrlKey || event.altKey) {
-        return
-      }
-
-      if (event.key.toLowerCase() !== "d") {
-        return
-      }
-
-      if (isTypingTarget(event.target)) {
-        return
-      }
-
-      toggleTheme()
-    }
-
-    window.addEventListener("keydown", onKeyDown)
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown)
-    }
-  }, [toggleTheme])
-
-  React.useEffect(() => {
+    let count = 0
     let timer: ReturnType<typeof setTimeout> | null = null
-    let origin: { x: number; y: number } | null = null
 
-    function cancelHold() {
+    function reset() {
       if (timer !== null) {
         clearTimeout(timer)
         timer = null
       }
 
-      origin = null
+      count = 0
     }
 
-    function onTouchStart(event: TouchEvent) {
-      cancelHold()
-
-      if (event.touches.length !== 1) {
+    function onClick(event: MouseEvent) {
+      if (event.defaultPrevented) {
         return
       }
-
-      const touch = event.touches[0]
 
       if (isTypingTarget(event.target) || isInteractiveTarget(event.target)) {
+        reset()
         return
       }
 
-      origin = { x: touch.clientX, y: touch.clientY }
+      count += 1
 
-      timer = setTimeout(() => {
-        timer = null
-        origin = null
+      if (count >= REQUIRED_CLICKS) {
+        reset()
         navigator.vibrate?.(20)
         toggleTheme()
-      }, HOLD_DURATION_MS)
-    }
-
-    function onTouchMove(event: TouchEvent) {
-      if (origin === null) {
         return
       }
 
-      const touch = event.touches[0]
-
-      if (
-        Math.abs(touch.clientX - origin.x) > HOLD_MOVE_TOLERANCE_PX ||
-        Math.abs(touch.clientY - origin.y) > HOLD_MOVE_TOLERANCE_PX
-      ) {
-        cancelHold()
+      if (timer !== null) {
+        clearTimeout(timer)
       }
+
+      timer = setTimeout(reset, CLICK_INTERVAL_MS)
     }
 
-    window.addEventListener("touchstart", onTouchStart, { passive: true })
-    window.addEventListener("touchmove", onTouchMove, { passive: true })
-    window.addEventListener("touchend", cancelHold)
-    window.addEventListener("touchcancel", cancelHold)
+    window.addEventListener("click", onClick)
 
     return () => {
-      cancelHold()
-      window.removeEventListener("touchstart", onTouchStart)
-      window.removeEventListener("touchmove", onTouchMove)
-      window.removeEventListener("touchend", cancelHold)
-      window.removeEventListener("touchcancel", cancelHold)
+      reset()
+      window.removeEventListener("click", onClick)
     }
   }, [toggleTheme])
 
