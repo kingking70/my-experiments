@@ -8,6 +8,6 @@ import archived from './archived';
 import healthUp from './healthup';
 
 
-const projects: Note[] = [what, thissite, newclear, climatehelp, thewanderclan, healthUp, archived];
+const projects: Note[] = [what, thissite, healthUp, climatehelp, newclear, thewanderclan, archived];
 
 export default projects;
