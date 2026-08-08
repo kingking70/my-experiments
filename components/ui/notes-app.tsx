@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { Fragment, useState } from 'react';
 import { Search, PenLine, PanelLeft, Folder, FolderOpen, Pin, ChevronLeft } from 'lucide-react';
 import { folders, allNotes } from './notes';
 import type { Note } from './notes/types';
@@ -12,18 +12,31 @@ function FolderIcon({ selected }: { selected: boolean }) {
   return selected ? <FolderOpen className={cls} /> : <Folder className={cls} />;
 }
 
-function Highlight({ text, query }: { text: string; query: string }) {
-  if (!query) return <>{text}</>;
+function marked(text: string, query: string) {
+  if (!query) return text;
   const parts = text.split(new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi'));
+  return parts.map((part, i) =>
+    part.toLowerCase() === query.toLowerCase() ? (
+      <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/50 rounded-sm px-px text-foreground">
+        {part}
+      </mark>
+    ) : (
+      part
+    )
+  );
+}
+
+function Highlight({ text, query }: { text: string; query: string }) {
+  const segments = text.split(/(~~[^~]+~~)/g);
   return (
     <>
-      {parts.map((part, i) =>
-        part.toLowerCase() === query.toLowerCase() ? (
-          <mark key={i} className="bg-amber-300/70 dark:bg-amber-500/50 rounded-sm px-px text-foreground">
-            {part}
-          </mark>
+      {segments.map((segment, i) =>
+        segment.startsWith('~~') && segment.endsWith('~~') && segment.length > 4 ? (
+          <s key={i} className="line-through text-muted-foreground">
+            {marked(segment.slice(2, -2), query)}
+          </s>
         ) : (
-          part
+          <Fragment key={i}>{marked(segment, query)}</Fragment>
         )
       )}
     </>
